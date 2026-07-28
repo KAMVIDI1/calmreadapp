@@ -24,13 +24,15 @@ jobs:
           flutter-version: '3.x'
 
       - name: Get dependencies
+        working_directory: calmreadapp/      # ← ADD THIS ONE LINE
         run: flutter pub get
 
       - name: Build APK
+        working_directory: calmreadapp/      # ← ADD THIS ONE LINE
         run: flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: calmreader-app
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: calmreadapp/build/app/outputs/flutter-apk/app-release.apk   # ← UPDATE PATH
