@@ -40,13 +40,8 @@ body {
   overflow-x: hidden;
 }
 
-/* --- MINIMUM TOUCH TARGETS (44px x 44px) --- */
-button,
-a,
-input[type="button"],
-input[type="submit"],
-.clickable,
-.interactive {
+/* --- MINIMUM TOUCH TARGET HELPER --- */
+.touch-target {
   min-height: 44px;
   min-width: 44px;
   touch-action: manipulation;
@@ -56,36 +51,31 @@ input[type="submit"],
 input,
 select,
 textarea {
-  min-height: 44px;
   font-size: 16px !important;
 }
 
-/* --- TYPOGRAPHY SCALES --- */
-h1 {
+/* --- OPTIONAL TYPOGRAPHY UTILITY CLASSES --- */
+.heading-clamp-3xl {
   font-size: var(--text-3xl);
   line-height: 1.2;
 }
-h2 {
+.heading-clamp-2xl {
   font-size: var(--text-2xl);
   line-height: 1.3;
 }
-h3 {
+.heading-clamp-xl {
   font-size: var(--text-xl);
   line-height: 1.4;
 }
-h4 {
-  font-size: var(--text-lg);
-  line-height: 1.4;
-}
-p, li, .body-text {
+.body-clamp {
   font-size: var(--text-base);
   line-height: 1.6;
 }
-.small-text {
+.small-clamp {
   font-size: var(--text-sm);
   line-height: 1.5;
 }
-.xs-text {
+.xs-clamp {
   font-size: var(--text-xs);
   line-height: 1.4;
 }

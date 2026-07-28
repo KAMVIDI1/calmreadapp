@@ -51,24 +51,24 @@ export const StudioScreen: React.FC = () => {
         <div className="flex items-center gap-1.5 p-1 bg-stone-900 border border-stone-800 rounded-xl">
           <button
             onClick={() => setReadingMode('scroll')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all min-h-[44px] min-width-[44px] ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
               readingMode === 'scroll'
                 ? 'bg-amber-600 text-stone-950 font-semibold shadow-sm'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            <Scroll className="w-4 h-4" />
+            <Scroll className="w-4 h-4 shrink-0" />
             <span>Scroll</span>
           </button>
           <button
             onClick={() => setReadingMode('paged')}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all min-h-[44px] min-width-[44px] ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
               readingMode === 'paged'
                 ? 'bg-amber-600 text-stone-950 font-semibold shadow-sm'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            <Book className="w-4 h-4" />
+            <Book className="w-4 h-4 shrink-0" />
             <span>Paged</span>
           </button>
         </div>
@@ -169,18 +169,18 @@ export const StudioScreen: React.FC = () => {
             </div>
 
             {/* Typography Controls */}
-            <div className="flex items-center gap-2 bg-stone-900 border border-stone-800 p-1 rounded-xl">
+            <div className="flex items-center gap-1.5 bg-stone-900 border border-stone-800 p-1 rounded-xl">
               <button
                 onClick={() => setFontSize(prev => Math.max(14, prev - 2))}
-                className="px-2.5 py-1 text-xs font-mono font-bold text-stone-300 hover:text-amber-400 min-h-[44px] min-w-[44px]"
+                className="px-2.5 py-1 text-xs font-mono font-bold text-stone-300 hover:text-amber-400 hover:bg-stone-800/80 rounded-lg transition-colors"
                 title="Decrease Font Size"
               >
                 A-
               </button>
-              <span className="text-xs font-mono text-amber-400 px-1">{fontSize}px</span>
+              <span className="text-xs font-mono text-amber-400 px-1 font-semibold">{fontSize}px</span>
               <button
                 onClick={() => setFontSize(prev => Math.min(28, prev + 2))}
-                className="px-2.5 py-1 text-xs font-mono font-bold text-stone-300 hover:text-amber-400 min-h-[44px] min-w-[44px]"
+                className="px-2.5 py-1 text-xs font-mono font-bold text-stone-300 hover:text-amber-400 hover:bg-stone-800/80 rounded-lg transition-colors"
                 title="Increase Font Size"
               >
                 A+
