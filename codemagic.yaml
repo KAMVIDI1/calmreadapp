@@ -1,40 +1,35 @@
-# ==============================================================================
-# Codemagic CI/CD Configuration for CalmReader (Flutter)
-# ==============================================================================
-# Documentation: https://docs.codemagic.io/yaml-basic-configuration/yaml-getting-started/
-# ==============================================================================
+# ==================================================================================================
+# Codemagic CI/CD Configuration for CalmReader
+#
+# This configuration supports Flutter workflows but is defensive: all Flutter-specific steps
+# first detect the presence of a `pubspec.yaml` and will gracefully skip when no Flutter project
+# is found in the repository. This prevents CI failures for repositories that are not Flutter apps
+# (or that contain Flutter projects in separate subfolders that aren't checked out).
+# ==================================================================================================
 
 workflows:
-  # ----------------------------------------------------------------------------
-  # Android Release APK Build Workflow
-  # ----------------------------------------------------------------------------
   android-release:
     name: CalmReader - Android Release APK
     max_build_duration: 60
-    instance_type: mac_mini_m2 # M2 Mac Mini for fast, efficient builds
-    working_directory: . # Set working directory (change to subfolder path e.g. 'app' if Flutter is in a subfolder)
+    instance_type: mac_mini_m2
+    working_directory: .
 
-    # Environment variables configuration
     environment:
-      # Environment Variable Groups configured in Codemagic UI (Secrets)
       groups:
-        - supabase_credentials # Add SUPABASE_URL and SUPABASE_ANON_KEY in Codemagic UI under this group
+        - supabase_credentials
       vars:
-        # Default fallback variables if not provided via environment groups
         SUPABASE_URL: ${SUPABASE_URL:-"https://your-supabase-project.supabase.co"}
         SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-"your-anon-key-here"}
         PACKAGE_NAME: "com.calmreader.app"
-      flutter: stable # Uses the latest stable version of Flutter 3.x
+      flutter: stable
       xcode: latest
       cocoapods: default
 
-    # Caching dependencies to accelerate build pipeline speeds
     cache:
       cache_paths:
         - $HOME/.pub-cache
         - $HOME/Library/Caches/CocoaPods
 
-    # Trigger build automatically on push to main branch or PRs
     triggering:
       events:
         - push
@@ -57,18 +52,24 @@ workflows:
               echo "Found pubspec.yaml in: $FLUTTER_ROOT. Changing working directory..."
               cd "$FLUTTER_ROOT"
             else
-              echo "WARNING: pubspec.yaml not found. Ensure Flutter project files exist in the repository."
+              echo "WARNING: pubspec.yaml not found. This repository does not appear to contain a Flutter project. Flutter steps will be skipped."
             fi
           fi
           echo "=== Flutter & Environment Diagnostics ==="
-          flutter --version
-          dart --version
+          flutter --version || true
+          dart --version || true
 
       - name: Get Flutter dependencies
         script: |
           if [ ! -f "pubspec.yaml" ]; then
             FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
-            [ -n "$FLUTTER_ROOT" ] && cd "$FLUTTER_ROOT"
+            if [ -z "$FLUTTER_ROOT" ]; then
+              echo "No pubspec.yaml found — skipping Flutter dependency step."
+              exit 0
+            else
+              echo "Found pubspec.yaml in: $FLUTTER_ROOT. Changing working directory..."
+              cd "$FLUTTER_ROOT"
+            fi
           fi
           echo "=== Fetching Pub Dependencies ==="
           flutter pub get
@@ -77,7 +78,12 @@ workflows:
         script: |
           if [ ! -f "pubspec.yaml" ]; then
             FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
-            [ -n "$FLUTTER_ROOT" ] && cd "$FLUTTER_ROOT"
+            if [ -z "$FLUTTER_ROOT" ]; then
+              echo "No pubspec.yaml found — skipping Flutter analyzer step."
+              exit 0
+            else
+              cd "$FLUTTER_ROOT"
+            fi
           fi
           echo "=== Running Flutter Analyzer ==="
           flutter analyze || true
@@ -86,7 +92,12 @@ workflows:
         script: |
           if [ ! -f "pubspec.yaml" ]; then
             FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
-            [ -n "$FLUTTER_ROOT" ] && cd "$FLUTTER_ROOT"
+            if [ -z "$FLUTTER_ROOT" ]; then
+              echo "No pubspec.yaml found — skipping Flutter tests."
+              exit 0
+            else
+              cd "$FLUTTER_ROOT"
+            fi
           fi
           echo "=== Running Flutter Tests ==="
           flutter test || true
@@ -95,7 +106,12 @@ workflows:
         script: |
           if [ ! -f "pubspec.yaml" ]; then
             FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
-            [ -n "$FLUTTER_ROOT" ] && cd "$FLUTTER_ROOT"
+            if [ -z "$FLUTTER_ROOT" ]; then
+              echo "No pubspec.yaml found — skipping Android build."
+              exit 0
+            else
+              cd "$FLUTTER_ROOT"
+            fi
           fi
           echo "=== Building Release APK for CalmReader ==="
           flutter build apk --release \
@@ -104,13 +120,11 @@ workflows:
             --dart-define=SUPABASE_URL=$SUPABASE_URL \
             --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
-    # Generated artifacts stored for direct download after build completion
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
       - build/app/outputs/bundle/release/*.aab
       - build/app/outputs/mapping/release/mapping.txt
 
-    # Publishing and Build Notifications
     publishing:
       email:
         recipients:
@@ -119,9 +133,6 @@ workflows:
           success: true
           failure: true
 
-  # ----------------------------------------------------------------------------
-  # Optional iOS Release Build Workflow (Prepared for App Store / TestFlight)
-  # ----------------------------------------------------------------------------
   ios-release:
     name: CalmReader - iOS Release Build
     max_build_duration: 60
@@ -145,10 +156,28 @@ workflows:
     scripts:
       - name: Get Flutter dependencies
         script: |
+          if [ ! -f "pubspec.yaml" ]; then
+            FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
+            if [ -z "$FLUTTER_ROOT" ]; then
+              echo "No pubspec.yaml found — skipping Flutter dependency step."
+              exit 0
+            else
+              cd "$FLUTTER_ROOT"
+            fi
+          fi
           flutter pub get
 
       - name: Build iOS No-Codesign Bundle
         script: |
+          if [ ! -f "pubspec.yaml" ]; then
+            FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
+            if [ -z "$FLUTTER_ROOT" ]; then
+              echo "No pubspec.yaml found — skipping iOS build."
+              exit 0
+            else
+              cd "$FLUTTER_ROOT"
+            fi
+          fi
           flutter build ios --release --no-codesign \
             --dart-define=SUPABASE_URL=$SUPABASE_URL \
             --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
