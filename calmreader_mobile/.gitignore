@@ -1,0 +1,16 @@
+# Flutter
+.dart_tool/
+.idea/
+build/
+*.apk
+*.aab
+*.lock
+pubspec.lock
+.DS_Store
+*.swp
+*.swo
+*.log
+*.iml
+*.ipr
+*.iws
+*.lock-wait
