@@ -1,0 +1,6 @@
+{
+  "name": "CalmReader Library",
+  "description": "The official offline companion app for CalmReader. Securely enjoy downloaded books, audiobooks, videos, and articles anywhere.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
