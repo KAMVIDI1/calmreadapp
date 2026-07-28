@@ -1,4 +1,4 @@
-name: Build Flutter APK
+name: Build web app
 
 on:
   push:
@@ -12,33 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          distribution: zulu
-          java-version: '17'
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.x'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
 
-      - name: Get dependencies
-        run: |
-          cd calmreadapp
-          flutter pub get
+      - name: Build app
+        run: npm run build
 
-      - name: Build APK
-        run: |
-          cd calmreadapp
-          flutter build apk --release
-
-      - name: List files (debug)
-        run: |
-          ls -la calmreadapp/build/app/outputs/flutter-apk/
-
-      - name: Upload APK
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: calmreader-app
-          path: calmreadapp/build/app/outputs/flutter-apk/app-release.apk
+          name: calmreadapp-build
+          path: dist
