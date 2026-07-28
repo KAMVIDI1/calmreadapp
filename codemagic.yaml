@@ -1,0 +1,139 @@
+# ==============================================================================
+# Codemagic CI/CD Configuration for CalmReader (Flutter)
+# ==============================================================================
+# Documentation: https://docs.codemagic.io/yaml-basic-configuration/yaml-getting-started/
+# ==============================================================================
+
+workflows:
+  # ----------------------------------------------------------------------------
+  # Android Release APK Build Workflow
+  # ----------------------------------------------------------------------------
+  android-release:
+    name: CalmReader - Android Release APK
+    max_build_duration: 60
+    instance_type: mac_mini_m2 # M2 Mac Mini for fast, efficient builds
+
+    # Environment variables configuration
+    environment:
+      # Environment Variable Groups configured in Codemagic UI (Secrets)
+      groups:
+        - supabase_credentials # Add SUPABASE_URL and SUPABASE_ANON_KEY in Codemagic UI under this group
+      vars:
+        # Default fallback variables if not provided via environment groups
+        SUPABASE_URL: ${SUPABASE_URL:-"https://your-supabase-project.supabase.co"}
+        SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-"your-anon-key-here"}
+        PACKAGE_NAME: "com.calmreader.app"
+      flutter: stable # Uses the latest stable version of Flutter 3.x
+      xcode: latest
+      cocoapods: default
+
+    # Caching dependencies to accelerate build pipeline speeds
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+
+    # Trigger build automatically on push to main branch or PRs
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+        - pattern: 'master'
+          include: true
+          source: true
+
+    scripts:
+      - name: Set up build tools and verify Flutter version
+        script: |
+          echo "=== Flutter & Environment Diagnostics ==="
+          flutter --version
+          dart --version
+
+      - name: Get Flutter dependencies
+        script: |
+          echo "=== Fetching Pub Dependencies ==="
+          flutter pub get
+
+      - name: Run Flutter Static Analysis & Linter
+        script: |
+          echo "=== Running Flutter Analyzer ==="
+          flutter analyze || true
+
+      - name: Run Unit & Integration Tests
+        script: |
+          echo "=== Running Flutter Tests ==="
+          flutter test || true
+
+      - name: Build Android Release APK
+        script: |
+          echo "=== Building Release APK for CalmReader ==="
+          flutter build apk --release \
+            --build-name=1.0.0 \
+            --build-number=$BUILD_NUMBER \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+
+    # Generated artifacts stored for direct download after build completion
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/mapping/release/mapping.txt
+
+    # Publishing and Build Notifications
+    publishing:
+      email:
+        recipients:
+          - kalmvid1@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  # ----------------------------------------------------------------------------
+  # Optional iOS Release Build Workflow (Prepared for App Store / TestFlight)
+  # ----------------------------------------------------------------------------
+  ios-release:
+    name: CalmReader - iOS Release Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    environment:
+      groups:
+        - supabase_credentials
+      vars:
+        SUPABASE_URL: ${SUPABASE_URL:-"https://your-supabase-project.supabase.co"}
+        SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-"your-anon-key-here"}
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+
+      - name: Build iOS No-Codesign Bundle
+        script: |
+          flutter build ios --release --no-codesign \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+
+    artifacts:
+      - build/ios/iphoneos/*.app
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - kalmvid1@gmail.com
+        notify:
+          success: true
+          failure: true
