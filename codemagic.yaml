@@ -12,6 +12,7 @@ workflows:
     name: CalmReader - Android Release APK
     max_build_duration: 60
     instance_type: mac_mini_m2 # M2 Mac Mini for fast, efficient builds
+    working_directory: . # Set working directory (change to subfolder path e.g. 'app' if Flutter is in a subfolder)
 
     # Environment variables configuration
     environment:
@@ -47,29 +48,55 @@ workflows:
           source: true
 
     scripts:
-      - name: Set up build tools and verify Flutter version
+      - name: Locate Flutter Project Root & Diagnostics
         script: |
+          echo "=== Locating Flutter Project Root ==="
+          if [ ! -f "pubspec.yaml" ]; then
+            FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
+            if [ -n "$FLUTTER_ROOT" ]; then
+              echo "Found pubspec.yaml in: $FLUTTER_ROOT. Changing working directory..."
+              cd "$FLUTTER_ROOT"
+            else
+              echo "WARNING: pubspec.yaml not found. Ensure Flutter project files exist in the repository."
+            fi
+          fi
           echo "=== Flutter & Environment Diagnostics ==="
           flutter --version
           dart --version
 
       - name: Get Flutter dependencies
         script: |
+          if [ ! -f "pubspec.yaml" ]; then
+            FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
+            [ -n "$FLUTTER_ROOT" ] && cd "$FLUTTER_ROOT"
+          fi
           echo "=== Fetching Pub Dependencies ==="
           flutter pub get
 
       - name: Run Flutter Static Analysis & Linter
         script: |
+          if [ ! -f "pubspec.yaml" ]; then
+            FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
+            [ -n "$FLUTTER_ROOT" ] && cd "$FLUTTER_ROOT"
+          fi
           echo "=== Running Flutter Analyzer ==="
           flutter analyze || true
 
       - name: Run Unit & Integration Tests
         script: |
+          if [ ! -f "pubspec.yaml" ]; then
+            FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
+            [ -n "$FLUTTER_ROOT" ] && cd "$FLUTTER_ROOT"
+          fi
           echo "=== Running Flutter Tests ==="
           flutter test || true
 
       - name: Build Android Release APK
         script: |
+          if [ ! -f "pubspec.yaml" ]; then
+            FLUTTER_ROOT=$(find . -name "pubspec.yaml" -not -path "*/.*" -exec dirname {} \; | head -n 1)
+            [ -n "$FLUTTER_ROOT" ] && cd "$FLUTTER_ROOT"
+          fi
           echo "=== Building Release APK for CalmReader ==="
           flutter build apk --release \
             --build-name=1.0.0 \
