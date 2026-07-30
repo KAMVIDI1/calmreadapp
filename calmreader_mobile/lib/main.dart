@@ -65,7 +65,7 @@ class _MainScreenState extends State<MainScreen> {
               'Distraction-free reading experience',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.stone[400],
+                color: Color(0xFFA8A29E),
               ),
             ),
           ],
@@ -76,7 +76,7 @@ class _MainScreenState extends State<MainScreen> {
         onTap: (index) => setState(() => _selectedIndex = index),
         backgroundColor: const Color(0xFF292524),
         selectedItemColor: const Color(0xFFD97706),
-        unselectedItemColor: Colors.stone[400],
+        unselectedItemColor: const Color(0xFFA8A29E),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.library_books),
