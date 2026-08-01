@@ -1,4 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'screens/audiobook_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/library_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/reader_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/studio_screen.dart';
+import 'screens/video_screen.dart';
+import 'screens/welcome_screen.dart';
 
 void main() {
   runApp(const CalmReaderApp());
@@ -9,89 +19,57 @@ class CalmReaderApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CalmReader',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFD97706),
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: const Color(0xFF1C1917),
-        useMaterial3: true,
+    final lightTheme = ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF2E7D32),
+        brightness: Brightness.light,
       ),
-      home: const MainScreen(),
+      scaffoldBackgroundColor: const Color(0xFFF5F0EB),
+      cardColor: Colors.white,
+      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
+      appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent, elevation: 0),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: const Color(0xFFFFFFFF),
+        indicatorColor: const Color(0xFFDDEDD8),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) => GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
+      ),
     );
-  }
-}
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('CalmReader Mobile'),
-        backgroundColor: const Color(0xFF292524),
+    final darkTheme = ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF2E7D32),
+        brightness: Brightness.dark,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.menu_book_rounded,
-              size: 64,
-              color: Color(0xFFD97706),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Welcome to CalmReader Mobile',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Distraction-free reading experience',
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFFA8A29E),
-              ),
-            ),
-          ],
-        ),
+      scaffoldBackgroundColor: const Color(0xFF121212),
+      cardColor: const Color(0xFF1E1E1E),
+      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+      appBarTheme: const AppBarTheme(backgroundColor: Colors.transparent, elevation: 0),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: const Color(0xFF1E1E1E),
+        indicatorColor: const Color(0xFF2E7D32),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) => GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        backgroundColor: const Color(0xFF292524),
-        selectedItemColor: const Color(0xFFD97706),
-        unselectedItemColor: const Color(0xFFA8A29E),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_books),
-            label: 'Library',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.auto_stories),
-            label: 'Studio',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-      ),
+    );
+
+    return MaterialApp(
+      title: 'CalmReader Mobile',
+      debugShowCheckedModeBanner: false,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
+      home: const WelcomeScreen(),
+      routes: {
+        '/home': (context) => const HomeScreen(),
+        '/library': (context) => const LibraryScreen(),
+        '/studio': (context) => const StudioScreen(),
+        '/settings': (context) => const SettingsScreen(),
+        '/reader': (context) => const ReaderScreen(),
+        '/audiobook': (context) => const AudiobookScreen(),
+        '/video': (context) => const VideoScreen(),
+        '/profile': (context) => const ProfileScreen(),
+      },
     );
   }
 }
