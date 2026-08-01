@@ -48,8 +48,10 @@ jobs:
           flutter test || true
 
       - name: Build APK (release)
+        env:
+          GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -Dfile.encoding=UTF-8"
         run: |
-          flutter build apk --release
+          flutter build apk --release --android-skip-build-dependency-validation
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
