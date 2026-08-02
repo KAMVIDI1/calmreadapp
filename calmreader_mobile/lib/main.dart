@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'screens/audiobook_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/library_screen.dart';
+import 'screens/marketplace_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/reader_screen.dart';
 import 'screens/settings_screen.dart';
