@@ -62,7 +62,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Your calm library, anywhere.',
+                    'Your CalmReader Library, Anywhere.',
                     style: GoogleFonts.inter(
                       fontSize: 15,
                       color: const Color(0xFF5D574F),

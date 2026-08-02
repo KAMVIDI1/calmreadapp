@@ -69,6 +69,7 @@ class CalmReaderApp extends StatelessWidget {
         '/audiobook': (context) => const AudiobookScreen(),
         '/video': (context) => const VideoScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/marketplace': (context) => const MarketplaceScreen(),
       },
     );
   }

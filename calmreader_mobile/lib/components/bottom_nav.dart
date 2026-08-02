@@ -18,7 +18,7 @@ class CalmBottomNav extends StatelessWidget {
       destinations: const [
         NavigationDestination(icon: Icon(Icons.home_rounded), label: 'Home'),
         NavigationDestination(icon: Icon(Icons.library_books_rounded), label: 'Library'),
-        NavigationDestination(icon: Icon(Icons.auto_stories_rounded), label: 'Studio'),
+        NavigationDestination(icon: Icon(Icons.shopping_bag_rounded), label: 'Marketplace'),
         NavigationDestination(icon: Icon(Icons.person_rounded), label: 'Profile'),
       ],
       labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,

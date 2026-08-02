@@ -1,0 +1,20 @@
+{
+  "seedColor": "#2E7D32",
+  "useMaterial3": true,
+  "brightness": "light",
+  "scaffoldBackground": "#F5F0EB",
+  "cardBackground": "#FFFFFF",
+  "navigationBar": {
+    "background": "#FFFFFF",
+    "indicator": "#DDEDD8",
+    "labelFontSize": 12,
+    "labelWeight": 600
+  },
+  "appBar": {
+    "background": "transparent",
+    "elevation": 0,
+    "titleFont": "Playfair Display",
+    "titleWeight": 700,
+    "titleSize": 24
+  }
+}

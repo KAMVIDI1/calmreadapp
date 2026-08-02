@@ -1,0 +1,27 @@
+{
+  "fontFamilyDisplay": "Playfair Display",
+  "fontFamilyBody": "Inter",
+  "scale": {
+    "xs": 11,
+    "sm": 12,
+    "md": 13,
+    "lg": 14,
+    "xl": 15,
+    "2xl": 16,
+    "3xl": 18,
+    "4xl": 20,
+    "5xl": 24,
+    "6xl": 30
+  },
+  "lineHeight": {
+    "tight": 1.2,
+    "normal": 1.5,
+    "relaxed": 1.7
+  },
+  "weight": {
+    "regular": 400,
+    "medium": 500,
+    "semibold": 600,
+    "bold": 700
+  }
+}

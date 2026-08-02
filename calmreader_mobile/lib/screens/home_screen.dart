@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../components/bottom_nav.dart';
 import '../components/continue_reading.dart';
+import 'marketplace_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -35,12 +37,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final List<Widget> pages = [
       const _HomeContent(),
       const _LibraryContent(),
-      const _StudioContent(),
+      const MarketplaceScreen(),
       const _ProfileContent(),
     ];
 
     return Scaffold(
-      body: pages[_selectedIndex],
+      body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: CalmBottomNav(
         currentIndex: _selectedIndex,
         onTap: (value) => setState(() => _selectedIndex = value),
@@ -74,7 +76,7 @@ class _HomeContent extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Today’s focus', style: GoogleFonts.inter(fontSize: 13, color: Colors.white70)),
+                  Text('Today\'s focus', style: GoogleFonts.inter(fontSize: 13, color: Colors.white70)),
                   const SizedBox(height: 8),
                   Text('A slower, brighter reading habit', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
                   const SizedBox(height: 12),
@@ -85,7 +87,13 @@ class _HomeContent extends StatelessWidget {
             const SizedBox(height: 18),
             ContinueReadingCard(onPressed: () => Navigator.pushNamed(context, '/reader')),
             const SizedBox(height: 18),
-            Text('Recently opened', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+            Row(
+              children: [
+                Text('Recently opened', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                const Spacer(),
+                TextButton(onPressed: () {}, child: const Text('See all')),
+              ],
+            ),
             const SizedBox(height: 12),
             SizedBox(
               height: 130,
@@ -96,6 +104,20 @@ class _HomeContent extends StatelessWidget {
                   _RecentBookCard(title: 'A Gentle Mind', subtitle: 'Essay 2'),
                   _RecentBookCard(title: 'Quiet Seasons', subtitle: '12 min left'),
                 ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text('Reading stats', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 12),
+            const _StatsRow(),
+            const SizedBox(height: 18),
+            FilledButton.icon(
+              onPressed: () => Navigator.pushNamed(context, '/marketplace'),
+              icon: const Icon(Icons.shopping_bag_rounded),
+              label: const Text('Browse Marketplace'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 52),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
             ),
           ],
@@ -127,6 +149,30 @@ class _LibraryContent extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Your downloaded books, neatly organized.', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
             const SizedBox(height: 18),
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Search your library...',
+                prefixIcon: const Icon(Icons.search_rounded),
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surface,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: const [
+                  _FilterChip(label: 'All', selected: true),
+                  _FilterChip(label: 'Fiction'),
+                  _FilterChip(label: 'Non-fiction'),
+                  _FilterChip(label: 'Essays'),
+                  _FilterChip(label: 'Poetry'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -134,38 +180,6 @@ class _LibraryContent extends StatelessWidget {
               itemCount: books.length,
               itemBuilder: (_, index) => _LibraryBookTile(book: books[index]),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StudioContent extends StatelessWidget {
-  const _StudioContent();
-
-  @override
-  Widget build(BuildContext context) {
-    final tiles = [
-      (_StudioTileModel(title: 'Create a note', subtitle: 'Capture reflections', icon: Icons.edit_note_rounded), '/reader'),
-      (_StudioTileModel(title: 'Audiobook', subtitle: 'Listen and relax', icon: Icons.headphones_rounded), '/audiobook'),
-      (_StudioTileModel(title: 'Video', subtitle: 'Watch a lesson', icon: Icons.play_circle_fill_rounded), '/video'),
-    ];
-
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Studio', style: GoogleFonts.playfairDisplay(fontSize: 24, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 8),
-            Text('Create, edit, and explore your calm media.', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-            const SizedBox(height: 18),
-            ...tiles.map((entry) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _StudioTile(tile: entry.$1, routeName: entry.$2),
-            )).toList(),
           ],
         ),
       ),
@@ -199,7 +213,32 @@ class _ProfileContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _StatRow(),
+            const _StatRow(),
+            const SizedBox(height: 24),
+            ListTile(
+              leading: const Icon(Icons.settings_rounded),
+              title: const Text('Settings'),
+              trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+              onTap: () => Navigator.pushNamed(context, '/settings'),
+            ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.logout_rounded, color: Color(0xFFB3261E)),
+              title: const Text('Logout', style: TextStyle(color: Color(0xFFB3261E))),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Log out?'),
+                    content: const Text('You will return to the welcome screen.'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                      TextButton(onPressed: () { Navigator.pop(ctx); Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false); }, child: const Text('Log out')),
+                    ],
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -258,34 +297,28 @@ class _LibraryBookTile extends StatelessWidget {
   }
 }
 
-class _StudioTile extends StatelessWidget {
-  const _StudioTile({required this.tile, required this.routeName});
+class _FilterChip extends StatelessWidget {
+  const _FilterChip({required this.label, this.selected = false});
 
-  final _StudioTileModel tile;
-  final String routeName;
+  final String label;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.pushNamed(context, routeName),
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFFE7DED5))),
-        child: Row(
-          children: [
-            Container(width: 42, height: 42, decoration: BoxDecoration(color: const Color(0xFFF4E8DA), borderRadius: BorderRadius.circular(14)), child: Icon(tile.icon, color: const Color(0xFFD4A373))),
-            const SizedBox(width: 12),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(tile.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)), Text(tile.subtitle, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))])),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: FilterChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) {},
       ),
     );
   }
 }
 
-class _StatRow extends StatelessWidget {
+class _StatsRow extends StatelessWidget {
+  const _StatsRow();
+
   @override
   Widget build(BuildContext context) {
     final stats = [
@@ -311,12 +344,4 @@ class _BookCardModel {
 
   final String title;
   final String subtitle;
-}
-
-class _StudioTileModel {
-  const _StudioTileModel({required this.title, required this.subtitle, required this.icon});
-
-  final String title;
-  final String subtitle;
-  final IconData icon;
 }
