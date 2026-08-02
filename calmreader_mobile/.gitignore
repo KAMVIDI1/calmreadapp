@@ -1,6 +1,7 @@
 # Flutter
 .dart_tool/
 .idea/
+.gradle/
 build/
 *.apk
 *.aab
