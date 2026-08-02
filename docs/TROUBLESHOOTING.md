@@ -21,6 +21,17 @@ This file records known issues, error messages, root causes, and fixes encounter
 - Symptom: Play Store rejects app or security risk
 - Fix: Configure a release keystore and update `android/app/build.gradle` to use it. Use CI secrets to provide signing credentials.
 
+5) "App appears to be invalid" / `apksigner verify` -> `DOES NOT VERIFY: Missing META-INF/MANIFEST.MF`
+- Symptom: A release `app-release.apk` builds but is rejected on install as "App appears to be invalid"; `apksigner verify -v` reports `DOES NOT VERIFY` and `Missing META-INF/MANIFEST.MF`, with no v1/v2/v3 signer.
+- Root cause: The release build was never signed. In this project it happened because `android/key.properties` held placeholder passwords and the release keystore did not exist, so `android/app/build.gradle` skipped defining `signingConfigs.release` and produced an unsigned APK. A secondary bug was a path typo `rootProject.file('android/app/...')` that resolves to `android/android/app/...` (double `android/`), so even a present keystore was never found.
+- Fix:
+  1. Generate a release keystore: `keytool -genkeypair -storetype JKS -keystore android/app/calmreader-release-key.jks -alias calmreader -keyalg RSA -keysize 2048 -validity 10000 -storepass <STORE> -keypass <KEY> -dname "..."`.
+  2. Set real values in `android/key.properties` with `storeFile=app/calmreader-release-key.jks` (resolved relative to the `android/` root).
+  3. Ensure `android/app/build.gradle` resolves the keystore via `rootProject.file(properties['storeFile'])` (single `app/` prefix) and applies `signingConfigs.release` to the `release` build type.
+  4. Rebuild: `flutter build apk --release`.
+  5. Verify: `zipalign -c -v 4 <apk>` and `apksigner verify -v <apk>` (expect "Verifies" + "v2 scheme: true"), and confirm the signer SHA-256 matches the keystore.
+- See `docs/BUILD.md` for the full replication recipe.
+
 Recovery procedures
 
 - If the build cache is corrupted, delete `~/.gradle/caches` and `build/` then rebuild.

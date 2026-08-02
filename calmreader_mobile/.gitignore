@@ -10,8 +10,10 @@ pubspec.lock
 .DS_Store
 *.swp
 *.swo
-*.log
-*.iml
+# Signing material must never be committed
+*.jks
+android/key.properties
+*.keystore
 *.ipr
 *.iws
 *.lock-wait

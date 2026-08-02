@@ -12,8 +12,9 @@ Required software
 - Git
 - Flutter 3.44.8 (stable)
 - Dart 3.12.2 (bundled with Flutter)
-- OpenJDK 17
-- Android SDK (platform 34 + build-tools 36.x)
+- OpenJDK 17 (JDK 17 required by AGP 8.9.1; JDK 21/25 is incompatible)
+- Android SDK: `platforms;android-36`, `build-tools;35.0.0`, NDK 28.x
+- Node.js 24.x + npm 11.x (for the web app)
 - Android command-line tools
 - Gradle (project uses wrapper)
 
@@ -39,7 +40,7 @@ Android SDK (command-line)
 
 ```bash
 export ANDROID_SDK_ROOT=$HOME/android-sdk
-sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platform-tools" "platforms;android-34" "build-tools;36.0.0" "cmdline-tools;latest"
+sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platform-tools" "platforms;android-36" "build-tools;35.0.0" "cmdline-tools;latest" "ndk;28.0.12433569"
 ```
 
 Codespaces setup
@@ -69,3 +70,18 @@ Release build
 
 - Ensure signing keys are configured (see `docs/BUILD.md`)
 - `flutter build appbundle --release`
+
+Web app setup
+
+The web app lives at the repository root (`calmreadapp/`) and is separate from the
+Flutter mobile app.
+
+```bash
+cd calmreadapp
+npm ci                 # or: npm install
+cp .env.example .env   # fill in Supabase / CalmReader URLs
+npm run dev            # Vite dev server + tsx server (http://localhost:5173)
+npm run build          # production bundle -> dist/ (see docs/BUILD.md)
+```
+
+Node 24.x is required; the web app does not need the Android/Flutter toolchain.

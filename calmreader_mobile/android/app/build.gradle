@@ -45,18 +45,20 @@ android {
     }
 
     def keyPropertiesFile = rootProject.file('key.properties')
-    def keyFile = keyPropertiesFile.exists() ? rootProject.file('android/app/calmreader-release-key.jks') : null
-    if (keyPropertiesFile.exists() && keyFile?.exists() == true) {
+    if (keyPropertiesFile.exists()) {
         def properties = new Properties()
         keyPropertiesFile.withReader('UTF-8') { reader ->
             properties.load(reader)
         }
-        signingConfigs {
-            release {
-                storeFile keyFile
-                storePassword properties['storePassword']
-                keyAlias properties['keyAlias']
-                keyPassword properties['keyPassword']
+        def keyFile = rootProject.file(properties['storeFile'] as String)
+        if (keyFile?.exists() == true) {
+            signingConfigs {
+                release {
+                    storeFile keyFile
+                    storePassword properties['storePassword']
+                    keyAlias properties['keyAlias']
+                    keyPassword properties['keyPassword']
+                }
             }
         }
     }
