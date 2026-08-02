@@ -213,7 +213,7 @@ class _ProfileContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const _StatRow(),
+            const _StatsRow(),
             const SizedBox(height: 24),
             ListTile(
               leading: const Icon(Icons.settings_rounded),

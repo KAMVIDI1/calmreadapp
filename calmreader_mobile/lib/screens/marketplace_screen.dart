@@ -13,7 +13,6 @@ class MarketplaceScreen extends StatefulWidget {
 }
 
 class _MarketplaceScreenState extends State<MarketplaceScreen> {
-  late Future<MarketplacePayload> _future;
   bool _isLoading = true;
   List<MarketplaceBook> _books = [];
   bool _isOffline = false;
@@ -21,20 +20,20 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
   @override
   void initState() {
     super.initState();
-    _future = _loadBooks();
+    _loadBooks();
   }
 
-  Future<MarketplacePayload> _loadBooks() async {
+  Future<void> _loadBooks() async {
     final connectivity = Connectivity();
     final result = await connectivity.checkConnectivity();
-    final hasConnection = result.any((r) => r != ConnectivityResult.none);
+    final hasConnection = result != ConnectivityResult.none;
 
     if (!hasConnection) {
       setState(() {
         _isOffline = true;
         _isLoading = false;
       });
-      return const MarketplacePayload(books: [], isOffline: true);
+      return;
     }
 
     try {
@@ -44,13 +43,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
         _isOffline = payload.isOffline;
         _isLoading = false;
       });
-      return payload;
     } catch (_) {
       setState(() {
         _isOffline = true;
         _isLoading = false;
       });
-      return const MarketplacePayload(books: [], isOffline: true);
     }
   }
 
@@ -59,10 +56,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       _isLoading = true;
       _isOffline = false;
     });
-    final payload = await _loadBooks();
-    if (mounted) {
-      setState(() => _future = payload);
-    }
+    await _loadBooks();
   }
 
   @override
