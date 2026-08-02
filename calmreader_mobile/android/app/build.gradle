@@ -47,12 +47,13 @@ android {
     signingConfigs {
         release {
             def keyPropertiesFile = rootProject.file('key.properties')
-            if (keyPropertiesFile.exists()) {
+            def keyFile = keyPropertiesFile.exists() ? rootProject.file('android/app/calmreader-release-key.jks') : null
+            if (keyPropertiesFile.exists() && keyFile?.exists() == true) {
                 def properties = new Properties()
                 keyPropertiesFile.withReader('UTF-8') { reader ->
                     properties.load(reader)
                 }
-                storeFile file(properties['storeFile'])
+                storeFile keyFile
                 storePassword properties['storePassword']
                 keyAlias properties['keyAlias']
                 keyPassword properties['keyPassword']
