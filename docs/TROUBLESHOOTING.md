@@ -32,6 +32,17 @@ This file records known issues, error messages, root causes, and fixes encounter
   5. Verify: `zipalign -c -v 4 <apk>` and `apksigner verify -v <apk>` (expect "Verifies" + "v2 scheme: true"), and confirm the signer SHA-256 matches the keystore.
 - See `docs/BUILD.md` for the full replication recipe.
 
+6) "App not installed" / signature mismatch on a device that previously ran the app
+- Symptom: a valid, signed APK (apksigner reports "Verifies") still fails to install
+  with "App not installed" or `INSTALL_FAILED_UPDATE_INCOMPATIBLE`.
+- Root cause: a different signature is already installed for the same package
+  (e.g. a previous debug build signed with the Flutter debug keystore vs. a new
+  release build signed with a release keystore).
+- Fix: uninstall the existing app on the device, then install. For frictionless
+  testing, build a debug APK (`flutter build apk --debug`) — it uses the standard
+  debug keystore and installs over any `flutter run` build. For Play Store /
+  production distribution, keep the signed release APK.
+
 Recovery procedures
 
 - If the build cache is corrupted, delete `~/.gradle/caches` and `build/` then rebuild.

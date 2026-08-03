@@ -149,6 +149,31 @@ release key uses `CN=CalmReader Mobile, O=CalmReader`.
 
 ---
 
+## Mobile: debug build for testing
+
+A release-signed APK is only accepted by a device that does not already hold a
+different signature for the same package. If installing on a device that
+previously ran a **debug** build (`flutter run`) fails with *App not installed* /
+signature mismatch, build and install a **debug** APK instead — the standard
+Flutter debug keystore matches every `flutter run` install, so it always installs
+cleanly:
+
+```bash
+flutter build apk --debug --target-platform android-arm64
+# -> build/app/outputs/flutter-apk/app-debug.apk  (debug-keystore signed)
+```
+
+Verify it the same way:
+
+```bash
+$BUILD_TOOLS/apksigner verify -v build/app/outputs/flutter-apk/app-debug.apk
+$BUILD_TOOLS/zipalign -c -v 4 build/app/outputs/flutter-apk/app-debug.apk
+```
+
+Debug builds are fine for functionality testing but are **not** optimized and are
+not accepted by Google Play. For a Play-ready / production artifact, use the
+signed release APK and (if needed) uninstall the existing app first.
+
 ## Mobile: CI/release notes
 
 - The release keystore and `key.properties` are **never** committed (`.gitignore`
