@@ -153,9 +153,10 @@ release key uses `CN=CalmReader Mobile, O=CalmReader`.
 
 - The release APK bundles `arm64-v8a` + `armeabi-v7a` native libraries, so it
   installs on virtually all physical Android phones (minSdk 24 / Android 7.0+).
-  x86_64 (some Android emulators) is not included — 3-ABI universal packaging
-  exhausts this environment's 7.8 GB RAM — so for emulator coverage run
-  `flutter build apk --release --split-per-abi` for per-architecture APKs.
+  x86_64 (some Android emulators) is **not** included — packaging the x86_64
+  native libs OOM-kills the Gradle daemon in this 7.8 GB environment (universal,
+  `--split-per-abi`, and single-ABI `android-x64` builds all fail ~170 s in). For
+  emulator coverage, build the APK locally on a machine with more RAM.
 - Signing uses **v2 (APK Signature Scheme v2)**, which is verified by every
   Android 7.0+ device (minSdk 24) — so the APK installs on all supported devices.
   (v1/JAR signing is not required for minSdk 24+.)
