@@ -151,9 +151,11 @@ release key uses `CN=CalmReader Mobile, O=CalmReader`.
 
 ## Mobile: compatibility & install notes
 
-- The release APK is a **universal** APK: native libraries for `arm64-v8a`,
-  `armeabi-v7a`, and `x86_64` are all included, so it installs on physical phones
-  and emulators regardless of architecture.
+- The release APK bundles `arm64-v8a` + `armeabi-v7a` native libraries, so it
+  installs on virtually all physical Android phones (minSdk 24 / Android 7.0+).
+  x86_64 (some Android emulators) is not included — 3-ABI universal packaging
+  exhausts this environment's 7.8 GB RAM — so for emulator coverage run
+  `flutter build apk --release --split-per-abi` for per-architecture APKs.
 - Signing uses **v2 (APK Signature Scheme v2)**, which is verified by every
   Android 7.0+ device (minSdk 24) — so the APK installs on all supported devices.
   (v1/JAR signing is not required for minSdk 24+.)
@@ -162,10 +164,12 @@ release key uses `CN=CalmReader Mobile, O=CalmReader`.
   a copy of the app signed with a **different** key (e.g. a previous `flutter run`
   debug build). Resolve it by **uninstalling the existing app first**, then
   installing the release APK.
-- For friction-free testing without uninstalling, use the universal **debug** APK
+- For friction-free testing without uninstalling, use the debug APK
   (`build-artifacts/app-debug.apk`): it is signed with the standard Flutter debug
-  keystore and matches every `flutter run` install. Debug builds are not accepted
-  by Google Play.
+  keystore and matches any `flutter run` install. It includes `arm64-v8a` +
+  `armeabi-v7a` (physical phones; x86_64 emulators are not supported). For
+  production or x86_64 devices, use the universal release APK (`app-release.apk`).
+  Debug builds are not accepted by Google Play.
 
 ## Mobile: debug build for testing
 
