@@ -149,6 +149,24 @@ release key uses `CN=CalmReader Mobile, O=CalmReader`.
 
 ---
 
+## Mobile: compatibility & install notes
+
+- The release APK is a **universal** APK: native libraries for `arm64-v8a`,
+  `armeabi-v7a`, and `x86_64` are all included, so it installs on physical phones
+  and emulators regardless of architecture.
+- Signing uses **v2 (APK Signature Scheme v2)**, which is verified by every
+  Android 7.0+ device (minSdk 24) — so the APK installs on all supported devices.
+  (v1/JAR signing is not required for minSdk 24+.)
+- If install fails with *App not installed* / `INSTALL_FAILED_UPDATE_INCOMPATIBLE`
+  **even though `apksigner verify` reports "Verifies"**, the device already holds
+  a copy of the app signed with a **different** key (e.g. a previous `flutter run`
+  debug build). Resolve it by **uninstalling the existing app first**, then
+  installing the release APK.
+- For friction-free testing without uninstalling, use the universal **debug** APK
+  (`build-artifacts/app-debug.apk`): it is signed with the standard Flutter debug
+  keystore and matches every `flutter run` install. Debug builds are not accepted
+  by Google Play.
+
 ## Mobile: debug build for testing
 
 A release-signed APK is only accepted by a device that does not already hold a
